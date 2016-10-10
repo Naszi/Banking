@@ -21,6 +21,7 @@ public class AccountDAO implements IAccountDAO<AccountDTO> {
 		PreparedStatement statement;
 
 		try {
+			connection.getConnection().setAutoCommit(false);
 			statement = connection.getConnection().prepareStatement(SQL_INSERT);
 
 			statement.setString(1, a.getAccountId());
@@ -30,13 +31,23 @@ public class AccountDAO implements IAccountDAO<AccountDTO> {
 			statement.setString(5, a.getCustomerId());
 
 			if (statement.executeUpdate() > 0) {
+				connection.getConnection().commit();
 				return true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				connection.getConnection().rollback();
+				System.err.println("Transaction is being rolled back");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			connection.closeConnection();
+			try {
+				connection.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;
@@ -48,18 +59,29 @@ public class AccountDAO implements IAccountDAO<AccountDTO> {
 		PreparedStatement statement;
 
 		try {
+			connection.getConnection().setAutoCommit(false);
 			statement = connection.getConnection().prepareStatement(SQL_WITHDRAW_MONEY);
 			statement.setDouble(1, c.withDrawMoney(amount));
 			statement.setString(2, c.getAccountNumber());
 
 			if (statement.executeUpdate() > 0) {
+				connection.getConnection().commit();
 				return true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				connection.getConnection().rollback();
+				System.err.println("Transaction is being rolled back");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			connection.closeConnection();
+			try {
+				connection.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;
@@ -71,18 +93,29 @@ public class AccountDAO implements IAccountDAO<AccountDTO> {
 		PreparedStatement statement;
 
 		try {
+			connection.getConnection().setAutoCommit(false);
 			statement = connection.getConnection().prepareStatement(SQL_ADD_MONEY);
 			statement.setDouble(1, c.addMonney(amount));
 			statement.setString(2, c.getAccountNumber());
 
 			if (statement.executeUpdate() > 0) {
+				connection.getConnection().commit();
 				return true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				connection.getConnection().rollback();
+				System.err.println("Transaction is being rolled back");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			connection.closeConnection();
+			try {
+				connection.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;

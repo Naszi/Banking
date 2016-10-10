@@ -22,6 +22,7 @@ public class CustomerDAO implements ICustomerDAO<CustomerDTO> {
 		PreparedStatement preparedStatement;
 
 		try {
+			connection.getConnection().setAutoCommit(false);
 			preparedStatement = connection.getConnection().prepareStatement(SQL_INSERT);
 
 			preparedStatement.setString(1, c.getCustomerId());
@@ -30,13 +31,23 @@ public class CustomerDAO implements ICustomerDAO<CustomerDTO> {
 			preparedStatement.setString(4, c.getBirthDay());
 
 			if (preparedStatement.executeUpdate() > 0) {
+				connection.getConnection().commit();
 				return true;
 			}
 		} catch (SQLException e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			try {
+				connection.getConnection().rollback();
+				System.err.println("Transaction is being rolled back");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			connection.closeConnection();
+			try {
+				connection.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;
@@ -48,17 +59,28 @@ public class CustomerDAO implements ICustomerDAO<CustomerDTO> {
 		PreparedStatement preparedStatement;
 
 		try {
+			connection.getConnection().setAutoCommit(false);
 			preparedStatement = connection.getConnection().prepareStatement(SQL_DELETE);
 			preparedStatement.setString(1, key.toString());
 
 			if (preparedStatement.executeUpdate() > 0) {
+				connection.getConnection().commit();
 				return true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				connection.getConnection().rollback();
+				System.err.println("Transaction is being rolled back");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			connection.closeConnection();
+			try {
+				connection.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;
@@ -70,6 +92,7 @@ public class CustomerDAO implements ICustomerDAO<CustomerDTO> {
 		PreparedStatement preparedStatement;
 
 		try {
+			connection.getConnection().setAutoCommit(false);
 			preparedStatement = connection.getConnection().prepareStatement(SQL_UPDATE);
 			preparedStatement.setString(1, c.getName());
 			preparedStatement.setString(2, c.getAddress());
@@ -77,13 +100,23 @@ public class CustomerDAO implements ICustomerDAO<CustomerDTO> {
 			preparedStatement.setString(4, c.getCustomerId());
 
 			if (preparedStatement.executeUpdate() > 0) {
+				connection.getConnection().commit();
 				return true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				connection.getConnection().rollback();
+				System.err.println("Transaction is being rolled back");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			connection.closeConnection();
+			try {
+				connection.getConnection().setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;
