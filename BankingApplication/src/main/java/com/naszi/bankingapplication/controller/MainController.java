@@ -2,15 +2,10 @@ package com.naszi.bankingapplication.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,10 +13,12 @@ import com.naszi.bankingapplication.dao.AccountDAO;
 import com.naszi.bankingapplication.dao.AllCustomerDAO;
 import com.naszi.bankingapplication.dao.BankStatisticsDAO;
 import com.naszi.bankingapplication.dao.CustomerDAO;
+import com.naszi.bankingapplication.dao.MoneyDAO;
 import com.naszi.bankingapplication.dto.AccountDTO;
 import com.naszi.bankingapplication.dto.AllCustomerDTO;
 import com.naszi.bankingapplication.dto.BankStatisticsDTO;
 import com.naszi.bankingapplication.dto.CustomerDTO;
+import com.naszi.bankingapplication.dto.MoneyDTO;
 
 @Controller
 public class MainController {
@@ -30,9 +27,11 @@ public class MainController {
 	private CustomerDAO customerDAO = new CustomerDAO();
 	private AccountDAO accountDAO = new AccountDAO();
 	private BankStatisticsDAO bankStatisticsDAO = new BankStatisticsDAO();
+	private MoneyDAO moneyDAO = new MoneyDAO();
 
-	// Managed Customers
-
+	/**
+	 * Managed Customers
+	 */
 	@RequestMapping(value = "/listAllCustomer")
 	public ResponseEntity<List<AllCustomerDTO>> listAllCustomer() {
 
@@ -44,7 +43,7 @@ public class MainController {
 		return new ResponseEntity<List<AllCustomerDTO>>(customers, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/searchCustomer/{id}")
+	@RequestMapping(value = "/searchCustomer/{id}")
 	public ResponseEntity<CustomerDTO> readCustomer(@PathVariable("id") String id) {
 
 		CustomerDTO searchCustomer = customerDAO.read(id);
@@ -52,7 +51,7 @@ public class MainController {
 		return new ResponseEntity<CustomerDTO>(searchCustomer, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/addNewCustomer")
+	@RequestMapping(value = "/addNewCustomer")
 	public ResponseEntity<CustomerDTO> addNewCustomer(@RequestBody CustomerDTO customer) {
 
 		customerDAO.create(customer);
@@ -60,15 +59,15 @@ public class MainController {
 		return new ResponseEntity<CustomerDTO>(HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/addNewAccount")
-	public ResponseEntity<AccountDTO> addNewAccount(@RequestBody AccountDTO accoun) {
+	@RequestMapping(value = "/addNewAccount")
+	public ResponseEntity<AccountDTO> addNewAccount(@RequestBody AccountDTO account) {
 
-		accountDAO.create(accoun);
+		accountDAO.create(account);
 
 		return new ResponseEntity<AccountDTO>(HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/editCustomer")
+	@RequestMapping(value = "/editCustomer")
 	public ResponseEntity<CustomerDTO> editCustomer(@RequestBody CustomerDTO customer) {
 
 		customerDAO.update(customer);
@@ -77,7 +76,7 @@ public class MainController {
 
 	}
 
-	@DeleteMapping(value = "/deleteCustomer/{id}")
+	@RequestMapping(value = "/deleteCustomer/{id}")
 	public ResponseEntity<CustomerDTO> deleteCustomer(@PathVariable("id") String id) {
 
 		customerDAO.delete(id);
@@ -85,13 +84,37 @@ public class MainController {
 		return new ResponseEntity<CustomerDTO>(HttpStatus.OK);
 	}
 
-	// Managed Money
-
+	/**
+	 * Managed Money
+	 */
 	@RequestMapping(value = "/withDrawMoney")
-	public ResponseEntity<Object> withDrawMoney(HttpServletRequest request) {
-		System.out.println("accountnr: " + request.getParameter("accountnr"));
-		System.out.println("amount: " + request.getParameter("amount"));
-		return new ResponseEntity<Object>(HttpStatus.OK);
+	public ResponseEntity<MoneyDTO> withDrawMoney(@RequestBody MoneyDTO accountNumber,
+			@PathVariable("amount") String amount) {
+
+		Double dAmount = Double.parseDouble(amount);
+		moneyDAO.withDrawMoney(accountNumber, dAmount);
+
+		return new ResponseEntity<MoneyDTO>(HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/addMoney")
+	public ResponseEntity<MoneyDTO> addMoney(@RequestBody MoneyDTO accountNumber,
+			@PathVariable("amount") String amount) {
+
+		Double dAmount = Double.parseDouble(amount);
+		moneyDAO.addMoney(accountNumber, dAmount);
+
+		return new ResponseEntity<MoneyDTO>(HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/transferMoney")
+	public ResponseEntity<MoneyDTO> transferMoney(@RequestBody MoneyDTO from, @RequestBody MoneyDTO to,
+			@PathVariable("amount") String amount) {
+
+		Double dAmount = Double.parseDouble(amount);
+		moneyDAO.transferMoney(from, to, dAmount);
+
+		return new ResponseEntity<MoneyDTO>(HttpStatus.OK);
 	}
 
 	/**

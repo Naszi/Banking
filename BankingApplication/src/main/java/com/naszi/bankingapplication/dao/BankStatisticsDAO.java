@@ -59,7 +59,6 @@ public class BankStatisticsDAO implements IBankingStatisticDAO<BankStatisticsDTO
 		} catch (
 
 		SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			connection.closeConnection();
